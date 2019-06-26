@@ -2,8 +2,7 @@
 
 **A utility for triggering and closing popups.**
 
-Work
-s great for tooltips, popup menus, dropdown selects, etc.
+Works great for tooltips, popup menus, dropdown selects, etc.
 
 Available in two flavors:
 
@@ -14,11 +13,32 @@ Available in two flavors:
 How it works
 ------------
 
-Whenever the trigger is focused, hovered over or selected, `trigger.active` will become true. It will then stay true until the user moves the cursor or focus out of the trigger *and* out of the container.
+Say you have a trigger element, and a popup.
+
+```html
+<button>Trigger</button>
+<div>Popup</div>
+```
+
+You only want the popup to appear if the trigger is focused or selected -- *or* when the popup itself has focus.
+
+This utility handles this for you by adding events to the trigger and popup nodes, and exposing an `active` variable which you can use to switch the popup's visibility:
+
+```js
+<button ref={trigger.ref}>Trigger</button>
+{
+  trigger.active &&
+  <div ref={trigger.popupRef}>
+    Popup
+  </div>
+}
+```
 
 
 React Hook
 ----------
+
+The simplest way to use this tool is with a React hook.
 
 ```js
 import usePopupTrigger from 'popup-trigger/hook'
@@ -50,6 +70,8 @@ Combine with [react-popper](http://npmjs.com/package/react-popper) and [portals]
 
 Vanilla JS
 ----------
+
+Internally, everything is contained within a vanilla JavaScript class.
 
 ```js
 import PopupTrigger from 'popup-trigger'
