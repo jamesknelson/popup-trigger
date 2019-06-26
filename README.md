@@ -24,7 +24,7 @@ You only want the popup to appear if the trigger is focused or selected -- *or* 
 
 This utility handles this for you by adding events to the trigger and popup nodes, and exposing an `active` variable which you can use to switch the popup's visibility:
 
-```js
+```jsx
 <button ref={trigger.ref}>Trigger</button>
 {
   trigger.active &&
@@ -40,7 +40,7 @@ React Hook
 
 The simplest way to use this tool is with a React hook.
 
-```js
+```jsx
 import usePopupTrigger from 'popup-trigger/hook'
 
 function MyComponent() {
