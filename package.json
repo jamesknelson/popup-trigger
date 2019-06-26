@@ -1,0 +1,23 @@
+{
+  "name": "popup-trigger",
+  "version": "0.1.0",
+  "description": "A helper for triggering popups on focus, hover, and selection.",
+  "main": "PopupTrigger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamesknelson/popup-trigger.git"
+  },
+  "keywords": [
+    "popup",
+    "trigger"
+  ],
+  "author": "James K Nelson <james@jamesknelson.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamesknelson/popup-trigger/issues"
+  },
+  "homepage": "https://github.com/jamesknelson/popup-trigger#readme"
+}
