@@ -2,9 +2,19 @@
 
 **A utility for triggering and closing popups.**
 
-Works great for tooltips, popup menus, dropdown selects, etc.
+Work
+s great for tooltips, popup menus, dropdown selects, etc.
 
 Available in two flavors:
+
+- [React Hook](#react-hook)
+- [Vanilla JS](#vanilla-js)
+
+
+How it works
+------------
+
+Whenever the trigger is focused, hovered over or selected, `trigger.active` will become true. It will then stay true until the user moves the cursor or focus out of the trigger *and* out of the container.
 
 
 React Hook
