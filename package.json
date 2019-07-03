@@ -1,6 +1,6 @@
 {
   "name": "popup-trigger",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "A helper for triggering popups on focus, hover, and selection.",
   "main": "PopupTrigger.js",
   "scripts": {

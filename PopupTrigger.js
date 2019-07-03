@@ -1,8 +1,8 @@
 // Give delay by default, so that there's time for something within
 // the popup to focus after the trigger has been blurred.
-export const DefaultDelays = {
+const DefaultDelays = {
   in: 10,
-  out: 50
+  out: 50,
 }
 
 class PopupTrigger {
@@ -39,9 +39,28 @@ class PopupTrigger {
     this.clearPopupTimeouts()
 
     this._listeners = []
+
+    this.close = this.close.bind(this)
+    this.setTriggerNode = this.setTriggerNode.bind(this)
+    this.setPopupNode = this.setPopupNode.bind(this)
+
+    this.handleTriggerTouch = this.handleTriggerTouch.bind(this)
+    this.handleTriggerKeyDown = this.handleTriggerKeyDown.bind(this)
+    this.handleWindowInteraction = this.handleWindowInteraction.bind(this)
+    this.handleWindowKeyDown = this.handleWindowKeyDown.bind(this)
+
+    this.handleTriggerFocusOut = () => this.handleOut('trigger', 'focus')
+    this.handleTriggerHoverOut = () => this.handleOut('trigger', 'hover')
+    this.handlePopupFocusOut = () => this.handleOut('popup', 'focus')
+    this.handlePopupHoverOut = () => this.handleOut('popup', 'hover')
+
+    this.handleTriggerFocusIn = () => this.handleIn('trigger', 'focus')
+    this.handleTriggerHoverIn = () => this.handleIn('trigger', 'hover')
+    this.handlePopupFocusIn = () => this.handleIn('popup', 'focus')
+    this.handlePopupHoverIn = () => this.handleIn('popup', 'hover')
   }
 
-  close = () => {
+  close() {
     this.clearTriggerTimeouts()
     this.clearPopupTimeouts()
 
@@ -52,7 +71,7 @@ class PopupTrigger {
     this.dispatch({ type: 'close' })
   }
 
-  setTriggerNode = node => {
+  setTriggerNode(node) {
     if (node !== this.triggerNode) {
       this.teardownTrigger()
       this.triggerNode = node
@@ -68,7 +87,7 @@ class PopupTrigger {
     }
   }
 
-  setPopupNode = node => {
+  setPopupNode(node) {
     if (node !== this.popupNode) {
       this.teardownPopup()
       this.popupNode = node
@@ -155,7 +174,7 @@ class PopupTrigger {
 
     if (this.options.select) {
       node.addEventListener('click', this.handleTriggerTouch, false)
-      node.addEventListener('touchstart', this.handleTriggerTouch, false)
+      node.addEventListener('touchend', this.handleTriggerTouch, false)
       node.addEventListener('keydown', this.handleTriggerKeyDown, false)
     }
 
@@ -175,7 +194,7 @@ class PopupTrigger {
     if (node) {
       if (this.options.select) {
         node.removeEventListener('click', this.handleTriggerTouch, false)
-        node.removeEventListener('touchstart', this.handleTriggerTouch, false)
+        node.removeEventListener('touchend', this.handleTriggerTouch, false)
         node.removeEventListener('keydown', this.handleTriggerKeyDown, false)
       }
 
@@ -204,11 +223,7 @@ class PopupTrigger {
         window.addEventListener('focusin', this.handleWindowInteraction, false)
         window.addEventListener('keydown', this.handleWindowKeyDown, false)
         window.addEventListener('click', this.handleWindowInteraction, false)
-        window.addEventListener(
-          'touchstart',
-          this.handleWindowInteraction,
-          false,
-        )
+        window.addEventListener('touchend', this.handleWindowInteraction, false)
       }
 
       if (this.options.focus) {
@@ -235,7 +250,7 @@ class PopupTrigger {
         window.removeEventListener('keydown', this.handleWindowKeyDown, false)
         window.removeEventListener('click', this.handleWindowInteraction, false)
         window.removeEventListener(
-          'touchstart',
+          'touchend',
           this.handleWindowInteraction,
           false,
         )
@@ -243,39 +258,31 @@ class PopupTrigger {
 
       if (this.options.focus) {
         node.removeEventListener('focusin', this.handlePopupFocusIn, false)
-        node.removeEventListener(
-          'focusout',
-          this.handlePopupFocusOut,
-          false,
-        )
+        node.removeEventListener('focusout', this.handlePopupFocusOut, false)
       }
 
       if (this.options.hover) {
-        node.removeEventListener(
-          'mouseenter',
-          this.handlePopupHoverIn,
-          false,
-        )
-        node.removeEventListener(
-          'mouseleave',
-          this.handlePopupHoverOut,
-          false,
-        )
+        node.removeEventListener('mouseenter', this.handlePopupHoverIn, false)
+        node.removeEventListener('mouseleave', this.handlePopupHoverOut, false)
       }
 
       this.popupNode = undefined
     }
   }
 
-  handleTriggerTouch = () => {
+  handleTriggerTouch() {
     this.dispatch({
       type: 'select',
     })
   }
 
-  handleTriggerKeyDown = e => {
-    let form = getForm(e.target)
-    if (e.key === ' ' || e.key === 'Spacebar' || (!form && e.key === 'Enter')) {
+  handleTriggerKeyDown(event) {
+    let form = getForm(event.target)
+    if (
+      event.key === ' ' ||
+      event.key === 'Spacebar' ||
+      (!form && event.key === 'Enter')
+    ) {
       this.dispatch({
         type: 'select',
       })
@@ -304,12 +311,7 @@ class PopupTrigger {
     }
   }
 
-  handleTriggerFocusIn = () => this.handleIn('trigger', 'focus')
-  handleTriggerHoverIn = () => this.handleIn('trigger', 'hover')
-  handlePopupFocusIn = () => this.handleIn('popup', 'focus')
-  handlePopupHoverIn = () => this.handleIn('popup', 'hover')
-
-  handleOut(property, trigger, relatedTarget) {
+  handleOut(property, trigger) {
     let timeouts = this._timeouts[property][trigger]
     let afterDelay = () => {
       timeouts.out = undefined
@@ -327,19 +329,14 @@ class PopupTrigger {
     }
   }
 
-  handleTriggerFocusOut = () => this.handleOut('trigger', 'focus')
-  handleTriggerHoverOut = () => this.handleOut('trigger', 'hover')
-  handlePopupFocusOut = () => this.handleOut('popup', 'focus')
-  handlePopupHoverOut = () => this.handleOut('popup', 'hover')
-
-  handleWindowKeyDown = event => {
+  handleWindowKeyDown(event) {
     if (event.key === 'Escape' && this.options.closeOnEscape) {
       this.dispatch({
         type: 'close',
       })
     }
   }
-  handleWindowInteraction = event => {
+  handleWindowInteraction(event) {
     let node = event.target
     if (
       !(
@@ -464,4 +461,6 @@ function reducer(state, action) {
   }
 }
 
-export default PopupTrigger
+module.exports = PopupTrigger
+module.exports.DefaultDelays = DefaultDelays
+module.exports.PopupTrigger = PopupTrigger

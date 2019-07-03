@@ -1,5 +1,5 @@
-import { useCallback, useState, useEffect, useMemo, useRef } from 'react'
-import PopupTrigger from './PopupTrigger'
+const { useCallback, useState, useEffect, useMemo, useRef } = require('react')
+const PopupTrigger = require('./PopupTrigger')
 
 // Debounce nulling out the popup container to get around issues caused by
 // other badly handling refs, and causing `null` refs to be passed in.
@@ -40,14 +40,16 @@ function usePopupTrigger(options = {}) {
   )
 
   return useMemo(
-    () => ({
-      ...state,
-      close: trigger.close,
-      ref: trigger.setTriggerNode,
-      popupRef: popupRef,
-    }),
+    function() {
+      return {
+        ...state,
+        close: trigger.close,
+        ref: trigger.setTriggerNode,
+        popupRef: popupRef,
+      }
+    },
     [state, trigger, popupRef],
   )
 }
 
-export default usePopupTrigger
+module.exports = usePopupTrigger
