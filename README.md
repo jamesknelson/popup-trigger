@@ -45,10 +45,10 @@ import usePopupTrigger from 'popup-trigger/hook'
 
 function MyComponent() {
   let trigger = usePopupTrigger({
-    hover: true,  // Popup on hover
-    focus: true,  // Popup on focus
-    select: true, // Popup on touch/click the trigger,
-                  // or on enter/spacebar while the trigger is focused.
+    triggerOnFocus: true,
+    triggerOnHover: true,
+    triggerOnSelect: true, // Pop on touch/click the trigger, or
+                           // on enter/space while focused.
   })
 
   return (
@@ -77,10 +77,10 @@ Internally, everything is contained within a vanilla JavaScript class.
 import PopupTrigger from 'popup-trigger'
 
 let trigger = new PopupTrigger({
-  hover: true,  // Popup on hover
-  focus: true,  // Popup on focus
-  select: true, // Popup on touch/click the trigger,
-                // or on enter/spacebar while the trigger is focused.
+  triggerOnFocus: true,
+  triggerOnHover: true,
+  triggerOnSelect: true, // Pop on touch/click the trigger, or
+                          // on enter/space while focused.
 })
 
 trigger.setTriggerNode(/* ... */)
