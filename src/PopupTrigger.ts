@@ -58,15 +58,20 @@ export class PopupTrigger {
 
   private popupNode: HTMLElement | null
   private triggerNode: HTMLElement | null
+  private mouseDownTarget?: any
 
-  constructor({
-    triggerOnFocus = true,
-    triggerOnHover = false,
-    triggerOnSelect = true,
-    closeOnEscape = true,
-    delayIn = DefaultDelays.in,
-    delayOut = DefaultDelays.out,
-  }: PopupTriggerOptions = {}) {
+  constructor(
+    {
+      triggerOnFocus = false,
+      triggerOnHover = false,
+      triggerOnSelect = false,
+      closeOnEscape = true,
+      delayIn = DefaultDelays.in,
+      delayOut = DefaultDelays.out,
+    }: PopupTriggerOptions = {
+      triggerOnSelect: true,
+    },
+  ) {
     this.focus = triggerOnFocus
     this.hover = triggerOnHover
     this.select = triggerOnSelect
@@ -171,6 +176,9 @@ export class PopupTrigger {
   // ---
 
   dispatch(action: ReducerAction) {
+    // Clear any target waiting for mouse up every time something happens.
+    delete this.mouseDownTarget
+
     let oldState = this.getState()
     let newReducerState = reducer(this.reducerState, action)
     if (newReducerState !== this.reducerState) {
@@ -213,7 +221,8 @@ export class PopupTrigger {
     }
 
     if (this.select) {
-      node.addEventListener('click', this.handleTriggerTouch, false)
+      node.addEventListener('mousedown', this.handleTriggerMouseDown, false)
+      node.addEventListener('mouseup', this.handleTriggerMouseUp, false)
       node.addEventListener('touchend', this.handleTriggerTouch, false)
       node.addEventListener('keydown', this.handleTriggerKeyDown, false)
     }
@@ -233,7 +242,12 @@ export class PopupTrigger {
     let node = this.triggerNode
     if (node) {
       if (this.select) {
-        node.removeEventListener('click', this.handleTriggerTouch, false)
+        node.removeEventListener(
+          'mousedown',
+          this.handleTriggerMouseDown,
+          false,
+        )
+        node.removeEventListener('mouseup', this.handleTriggerMouseUp, false)
         node.removeEventListener('touchend', this.handleTriggerTouch, false)
         node.removeEventListener('keydown', this.handleTriggerKeyDown, false)
       }
@@ -254,6 +268,8 @@ export class PopupTrigger {
 
       this.triggerNode = null
     }
+
+    delete this.mouseDownTarget
   }
 
   setupPopup() {
@@ -310,6 +326,21 @@ export class PopupTrigger {
     }
   }
 
+  handleTriggerMouseDown = (event: MouseEvent) => {
+    if (this.triggerNode && !this.reducerState.selected) {
+      this.mouseDownTarget = event.target
+    }
+  }
+
+  handleTriggerMouseUp = (event: MouseEvent) => {
+    if (this.mouseDownTarget && event.target === this.mouseDownTarget) {
+      this.dispatch({
+        type: 'select',
+      })
+    }
+    delete this.mouseDownTarget
+  }
+
   handleTriggerTouch = () => {
     this.dispatch({
       type: 'select',
@@ -330,6 +361,12 @@ export class PopupTrigger {
   }
 
   handleIn(property: 'trigger' | 'popup', trigger: 'focus' | 'hover') {
+    if (property === 'trigger' && this.mouseDownTarget) {
+      // Don't do anything if this happens *while* triggering something
+      // else.
+      return
+    }
+
     let timeouts = this.timeouts[property][trigger]!
     let afterDelay = () => {
       timeouts.in = undefined
@@ -428,7 +465,7 @@ export class PopupTrigger {
 
 function getForm(node: HTMLElement | null) {
   while (node) {
-    if (node.tagName.toLowerCase() === 'form') {
+    if (node.tagName && node.tagName.toLowerCase() === 'form') {
       return node
     }
     node = node.parentNode as HTMLElement
