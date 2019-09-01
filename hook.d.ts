@@ -15,7 +15,7 @@ export interface PopupTriggerSnapshot {
     ref: (element: HTMLElement) => void;
     popupRef: (element: HTMLElement) => void;
 }
-declare function usePopupTrigger(options?: PopupTriggerOptions): {
+export declare function usePopupTrigger(options?: PopupTriggerOptions): {
     close: () => void;
     ref: (node: HTMLElement | null) => void;
     popupRef: (node: any) => void;

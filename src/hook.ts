@@ -24,7 +24,7 @@ export interface PopupTriggerSnapshot {
 // other badly handling refs, and causing `null` refs to be passed in.
 const UnsetPopupDebounce = 500
 
-function usePopupTrigger(options: PopupTriggerOptions = {}) {
+export function usePopupTrigger(options: PopupTriggerOptions = {}) {
   let triggerRef = useRef<PopupTrigger>((undefined as any) as PopupTrigger)
   if (!triggerRef.current) {
     triggerRef.current = new PopupTrigger(options)

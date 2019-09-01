@@ -1,6 +1,6 @@
 {
   "name": "popup-trigger",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A helper for triggering popups on focus, hover, and selection.",
   "author": "James K Nelson <james@jamesknelson.com>",
   "license": "MIT",
